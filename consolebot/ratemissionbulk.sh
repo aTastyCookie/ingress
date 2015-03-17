@@ -1,0 +1,46 @@
+#!/bin/bash
+#cat response/getNearbyMissions |json_xs |grep -E "guid|title|author"|tr "\n" ";"|sed -e 's/guid/\n/g'|tr -d ";"|cut -d\" -f3,7,11,15|sed -e 's/"/\ :\ /g'
+#cat response/getNearbyMissions |json_xs |grep -E "guid|title|author"|tr "\n" ";"|sed -e 's/guid/\n/g'|tr -d ";"|cut -d\" -f3,7,11,15|sed -e 's/"/\ :\ /g'|grep ALIEN|cut -d: -f1|awk '{print "bin/ratemission.sh",$1,0}'
+bin/ratemission.sh 86330c51cfd2439cafefb519aa5b7d64.1c 1000000
+bin/ratemission.sh e72d60d35fa148158af9e3f49128d6c5.1c 1000000
+bin/ratemission.sh 497a7e72ac6543bbb1317d814fe21a84.1c 0
+bin/ratemission.sh f664c1a7f0b84ad38eff40fef2575008.1c 0
+bin/ratemission.sh 3cafc106d1a6493693428a87e028b0af.1c 0
+bin/ratemission.sh 4cd85a02aca24b53a7ab9002704e0c98.1c 0
+bin/ratemission.sh 68e1561a7a814a0bb9db2410cf016624.1c 0
+bin/ratemission.sh be92ee5952a04256b40e28d5a7443aa1.1c 0
+bin/ratemission.sh 429bd44b3dc0442998ae8454e0d42991.1c 0
+bin/ratemission.sh 08feaca8e21643eca273c4a06b6878bc.1c 0
+bin/ratemission.sh 6ac0b8b9d6254d4da02d48abe5be565a.1c 0
+bin/ratemission.sh 83b16075751f470fb02a6ea97f33e44a.1c 0
+bin/ratemission.sh 059b1c5387134972a0aced0d5fbfb89f.1c 0
+bin/ratemission.sh a7ee002d42b84818bd3825bf3a500ca4.1c 0
+bin/ratemission.sh d4fd39f9c5e24c4f82f98b508383bd5b.1c 0
+bin/ratemission.sh 6c9ed433284a4f758bd21ac62f06ee1d.1c 0
+bin/ratemission.sh da0e826a1d0d44a5b888422f1e6aead7.1c 0
+bin/ratemission.sh 47854faa46b34cf9b9055dd3d46453bf.1c 0
+bin/ratemission.sh 5f086d24808640df91d6cbaba80dac21.1c 0
+bin/ratemission.sh 9cf327384a4143cf8d4fc3d8165a0edb.1c 0
+bin/ratemission.sh e89ef4caa53d453589b165b0f75e712c.1c 0
+bin/ratemission.sh 33df9eea0b3040f7978c11cfd8b0d5f2.1c 0
+bin/ratemission.sh 1c0153b414384331b23e18e7960fa5cb.1c 0
+bin/ratemission.sh fbbe7d37ca4b47c5a715f10089f93909.1c 0
+bin/ratemission.sh 8834835d5920424e86e1c4beaa34c607.1c 0
+bin/ratemission.sh 7191e7f5af24491f9ffe91c7995ed3ca.1c 0
+bin/ratemission.sh 307a6b96fa354380b3ec5f7515804d14.1c 0
+bin/ratemission.sh 40eeda4ee4c64755973d093775c2eb78.1c 0
+bin/ratemission.sh 2a22409a3cf7460bb9209abc6da7c54b.1c 0
+bin/ratemission.sh 13e947c4f9a440a09c462df01300bc28.1c 0
+bin/ratemission.sh d3abf8cf7d5c4bf3bf17b279b1c9b132.1c 0
+bin/ratemission.sh 37c6d2d789c7485f829eab0539b8562e.1c 0
+bin/ratemission.sh 3b2cb4b809bf421baace6c8ec941ae40.1c 0
+bin/ratemission.sh 33130b1cca89462cba82a5bff95cbda5.1c 0
+bin/ratemission.sh b071804ada144303b1b5f94b11cf944d.1c 0
+bin/ratemission.sh 38c6c36054cf4136a75964be3758543e.1c 0
+bin/ratemission.sh 514d82704ae34753bd3114b60562d56f.1c 0
+bin/ratemission.sh bc5df4f53c084f889c679eba3d73196d.1c 0
+bin/ratemission.sh 51cf66a4d2ca4e25adc7df1ef6ac739a.1c 0
+bin/ratemission.sh 6cd8f1d80a6a4bffba13d1939ffe1f2d.1c 0
+bin/ratemission.sh c2484b222c8b4333921f22d96bf8d552.1c 0
+bin/ratemission.sh 289bf86442774af9be2de5442aa78ac9.1c 0
+bin/ratemission.sh d6b22008933642e28082f57b037a3c4c.1c 0

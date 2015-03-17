@@ -1,0 +1,14 @@
+#!/bin/sh
+while true;do 
+  if [ -f error.lock ]; then
+    echo "error.lock is present, i will not continue"
+    exit 1
+  fi
+  bin/auths.sh;
+  bin/getinventory.sh;
+  cp ../config.war.inc config.inc
+  bin/randomizemap.sh maps/vilnius.txt
+    bin/hack.sh map.war.txt ;
+    sleep 500; 
+    bin/clearinv.sh
+done

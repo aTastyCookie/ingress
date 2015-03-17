@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+use strict;
+use JSON::XS;
+use Encode;
+my $knobsyncts=`cat knobsyncts.txt|tr -d "\r\n"`;
+my $HEXLATE6=$ARGV[0];
+my $HEXLONE6=$ARGV[1];
+my $ITEMGUID=$ARGV[2];
+binmode(STDOUT, ":utf8");
+my %request;
+my $request=\%request;
+print STDERR "will try to found blob\n";
+open (BLOBFILE, "maps/blobs/dropItem");
+my $blobjson = decode_json(join '', <BLOBFILE>);
+my $blob=%{$blobjson}->{params}{clientBasket}{clientBlob};
+my $bloblocation=%{$blobjson}->{params}{playerLocation};
+$request->{params}{itemGuid}=$ITEMGUID;
+$request->{params}{energyGlobGuids}=[];
+$request->{params}{knobSyncTimestamp}=$knobsyncts;
+$request->{params}{playerLocation}="$HEXLATE6,$HEXLONE6";
+#$request->{params}{playerLocation}=$bloblocation;
+$request->{params}{clientBasket}{clientBlob}=$blob;
+my $json_string    = encode_json($request);
+print $json_string;
+close(FILE);

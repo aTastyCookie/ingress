@@ -1,0 +1,15 @@
+#!/bin/sh
+while true;do 
+  if [ -f error.lock ]; then
+    echo "error.lock is present, i will not continue"
+    exit 1
+  fi
+  bin/auth.sh;
+  bin/getinventory.sh;
+  bin/randomizemap.sh maps/resistancecenter.txt; 
+  bin/hacknr.sh map.war.txt ; 
+  echo 53.890674,27.590167 > cur.txt; 
+  sleep 600; 
+  bin/proposetodrop.sh |grep -E "POWER_CUBE [4-8]|HEATSINK [5-7]|MULTIHACK [1,8]|RES_SHIELD [2-3]|FLIP|EMP_BURSTER [6-8]|EMITTER_A [4-8]|FORCE_AMP|TURRET"|sh; 
+  sleep 600;
+done
