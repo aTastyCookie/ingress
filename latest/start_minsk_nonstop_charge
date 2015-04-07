@@ -1,0 +1,22 @@
+#!/bin/sh
+while true;do 
+  if [ -f error.lock ]; then
+    echo "error.lock is present, i will not continue"
+    exit 1
+  fi
+  bin/auths.sh;
+  bin/getinventory.sh;
+  scp root@185.66.70.13:/opt/consolebot/mitm/maps/resistancerechargelatest.txt maps/
+  bin/randomizemap.sh maps/resistancerechargelatest.txt
+#  echo "making blobmap"
+#  bin/genblobmap.sh map.war.txt
+#  bin/randomizemap.sh map.war.txt
+  NUMPORTALS=`wc -l map.war.txt|awk '{print $1}'`
+  #cat inventory.txt|grep KEY > rechargekeys.txt
+  #bin/generaterechargeguids.sh
+  #cat rechargekeys.txt |grep -F -f maps/rechargeguids.txt > tmp.tmp
+  #mv tmp.tmp rechargekeys.txt
+  bin/charge.sh map.war.txt ;
+  echo 53.867181,27.539717 > cur.txt; 
+  sleep 600;
+done

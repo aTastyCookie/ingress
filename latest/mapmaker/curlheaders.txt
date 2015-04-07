@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Vary: Cookie
+Content-Type: text/html; charset=utf-8
+Set-Cookie: csrftoken=yyNvMQZK5PhX9Zu7KvdujJbyEJJ4HSha; expires=Tue, 22-Jul-2014 07:58:07 GMT; Max-Age=31449600; Path=/
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Date: Tue, 23 Jul 2013 07:58:07 GMT
+Server: Google Frontend
+Cache-Control: private
+Content-Length: 2862
+Expires: Tue, 23 Jul 2013 07:58:07 GMT
+

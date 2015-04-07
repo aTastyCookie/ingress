@@ -1,0 +1,19 @@
+#!/bin/sh
+while true;do 
+  if [ -f error.lock ]; then
+    echo "error.lock is present, i will not continue"
+    exit 1
+  fi
+  bin/auths.sh;
+  bin/getinventory.sh;
+  cp ../config.inc config.inc
+  scp root@185.66.70.13:/opt/consolebot/mitm/maps/center.txt maps/
+  bin/randomizemap.sh maps/center.txt
+  bin/genblobmap.sh map.war.txt
+  bin/randomizemapm1.sh map.war.txt
+    bin/hack.sh map.war.txt ;
+    echo 53.867181,27.539717 > cur.txt;
+    sleep 600;
+    bin/proposetodrop.sh |grep -E "CAPSULE|POWER_CUBE [4-8]|HEATSINK [5-7]|MULTIHACK [1,8]|RES_SHIELD [3-6]|FLIP|EMP_BURSTER [6-8]|EMITTER_A [4-8]|FORCE_AMP|TURRET"|sh;
+    sleep 60;
+done
