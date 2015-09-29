@@ -20,3 +20,10 @@ notifier:
 dirs:
   logs: logs/
 
+rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  user: spy
+  password: spypass23234
+  queue_key: ingress_data_leak
+

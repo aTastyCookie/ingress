@@ -97,7 +97,7 @@ WORKING_DIR = os.path.dirname(os.path.abspath(__file__)) + "/"
 
 config = load(open(WORKING_DIR + '/config/config.yml', 'r'))
 PID_FILE = config['daemon']['pid_file']
-LOG_FILE = open(WORKING_DIR + config['dirs']['logs'] + "daemon.log", 'a')
+LOG_FILE = open(WORKING_DIR + config['dirs']['logs'] + "daemon_process.log", 'a')
 
 context = daemon.DaemonContext(
     working_directory=WORKING_DIR,

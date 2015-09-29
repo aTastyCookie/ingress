@@ -3,7 +3,11 @@ import re
 import http.cookiejar
 from bs4 import BeautifulSoup
 import urllib
+import logging
 from pymongo import MongoClient
+import pika
+import json
+import time
 from ingress.exceptions.Ingress import IngressException
 from ingress.exceptions.AccountBanned import AccountBannedException
 from ingress.api.intel import Intel
@@ -17,6 +21,7 @@ class BaseWorker(threading.Thread):
         self.tiles = tiles
         self.notifier = notifier
         self.account = account
+        self.logger = logging.getLogger("daemon")
         client = MongoClient(
             host=config['db']['host'],
             port=int(config['db']['port'])
@@ -50,8 +55,10 @@ class BaseWorker(threading.Thread):
     def getUrlContent(self, url):
         return str(self.opener.open(url).read())
 
-    def getLoginCookies(self, email, password):
-        print('Login %s ...' % email)
+    def getLoginCookies(self):
+        email = self.account['email']
+        password = self.account['password']
+        self.logger.info('[%s] Login %s ...' % (self.name, email))
         login_url = re.findall('<a href="(.*?)" class="button_link"', self.getUrlContent(self.ingress_url), re.I)[0]
         ltmpl_shdf = re.findall('ltmpl=(.*?)&shdf=(.*)', login_url, re.I)
 
@@ -80,14 +87,10 @@ class BaseWorker(threading.Thread):
             raise AccountBannedException(email)
         return cookies
 
-    def getAccountCookies(self):
-        if self.accountCookies is None:
-            self.accountCookies = self.getLoginCookies(
-                self.account['email'], self.account['password']) + \
-                                  "ingress.intelmap.shflt=viz; ingress.intelmap.lat=%s; ingress.intelmap.lng=%s; ingress.intelmap.zoom=%s" % (
-                                      self.config['tilier']['base_lat'], self.config['tilier']['base_lng'], 16
-                                  )
-        return self.accountCookies
+    def getTileCookies(self, tile):
+        return self.getLoginCookies() + "ingress.intelmap.shflt=viz; ingress.intelmap.lat=%s; ingress.intelmap.lng=%s; ingress.intelmap.zoom=%s" % (
+            tile['lat'], tile['lng'], 16
+        )
 
     def lockAccount(self):
         self.db.accounts.update_one(self.account, {'$set': {'status': 'BUSY'}})
@@ -96,9 +99,22 @@ class BaseWorker(threading.Thread):
         if self.account['status'] == 'BUSY':
             self.db.accounts.update_one(self.account, {'$set': {'status': 'OK'}})
 
-    def buildApi(self):
-        return Intel(self.getAccountCookies(),
-                     getField(self.config['tilier']['base_lng'], self.config['tilier']['base_lat'], 16))
+    def buildApi(self, tile):
+        return Intel(self.getTileCookies(tile), getField(tile['lat'], tile['lng'], 16))
+
+    def emit(self, dump):
+        dump['meta'] = {
+            'account': self.account['email'],
+            'spy_region': 'kaliningradskaya oblast',
+            'captured_at': int(time.time())
+        }
+        ampqConn = pika.BlockingConnection(
+            pika.ConnectionParameters(self.config['rabbitmq']['host'], self.config['rabbitmq']['port'])
+        )
+        ampq = ampqConn.channel()
+        ampq.queue_declare(queue=self.config['rabbitmq']['queue_key'])
+        ampq.basic_publish(exchange='', routing_key=self.config['rabbitmq']['queue_key'], body=json.dumps(dump, ensure_ascii=False))
+        ampqConn.close()
 
     def start(self):
         try:

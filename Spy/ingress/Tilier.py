@@ -12,10 +12,10 @@ class Tilier:
         tiles = []
         for xtile in range(minxtile, maxxtile + 1):
             for ytile in range(minytile, maxytile + 1):
-                lat, lon = get_tile_center_lng_lat(xtile, ytile, 16)
+                lat, lng = get_tile_center_lng_lat(xtile, ytile, 16)
                 tiles.append({
                     'tile': '16_{}_{}_0_8_100'.format(xtile, ytile),
                     'lat': lat,
-                    'lon': lon
+                    'lng': lng
                 })
         return tiles
