@@ -65,9 +65,9 @@ class Daemon:
             try:
                 account = accounts.next()
                 worker = Worker(self.config, chunk, account, self.notifier, name=account['email'])
-                self.workers.append(worker)
                 self.logger.info("[Daemon] %s worker started" % account['email'])
                 worker.start()
+                self.workers.append(worker)
             except StopIteration:
                 self.logger.warning("[Daemon] Not enough accounts")
                 self.notifier.send(

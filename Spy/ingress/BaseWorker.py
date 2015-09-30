@@ -56,9 +56,13 @@ class BaseWorker(threading.Thread):
         return str(self.opener.open(url).read())
 
     def getLoginCookies(self):
+        for cookie in self.cookies:
+            if cookie.domain == 'www.ingress.com':
+                if cookie.name == 'csrftoken' and cookie.expires > int(time.time()):
+                    return self.accountCookies
         email = self.account['email']
         password = self.account['password']
-        self.logger.info('[%s] Login %s ...' % (self.name, email))
+        self.logger.info('[%s] Login' % self.name)
         login_url = re.findall('<a href="(.*?)" class="button_link"', self.getUrlContent(self.ingress_url), re.I)[0]
         ltmpl_shdf = re.findall('ltmpl=(.*?)&shdf=(.*)', login_url, re.I)
 
@@ -83,6 +87,7 @@ class BaseWorker(threading.Thread):
                 if cookie.name == 'csrftoken':
                     banned = False
                 cookies += '%s=%s; ' % (cookie.name, cookie.value)
+        self.accountCookies = cookies
         if banned:
             raise AccountBannedException(email)
         return cookies
@@ -115,12 +120,3 @@ class BaseWorker(threading.Thread):
         ampq.queue_declare(queue=self.config['rabbitmq']['queue_key'])
         ampq.basic_publish(exchange='', routing_key=self.config['rabbitmq']['queue_key'], body=json.dumps(dump, ensure_ascii=False))
         ampqConn.close()
-
-    def start(self):
-        try:
-            self.do()
-        except IngressException as e:
-            self.notifier.handleException(e)
-
-    def do(self):
-        pass

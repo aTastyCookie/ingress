@@ -5,6 +5,8 @@ class Portal:
         self.detailed_portal_data_length = self.summary_portal_data_length + 4
 
     def parseMod(self, list):
+        if list is None:
+            return {}
         return {
             'owner': list[0],
             'name': list[1],
@@ -13,6 +15,8 @@ class Portal:
         }
 
     def parseResonator(self, list):
+        if list is None:
+            return {}
         return {
             'owner': list[0],
             'level': list[1],
@@ -40,7 +44,7 @@ class Portal:
             'fragments': list[2],
         }
 
-    def codePortalData(self, list):
+    def corePortalData(self, list):
         return {
             'team': list[1],
             'latE6': list[2],
@@ -48,7 +52,7 @@ class Portal:
         }
 
     def summaryPortalData(self, list):
-        return {
+        data = {
             'level': list[4],
             'health': list[5],
             'resCount': list[6],
@@ -57,18 +61,20 @@ class Portal:
             'ornaments': list[9],
             'mission': list[10],
             'mission50plus': list[11],
-            'artifactBrief': self.parseArtifactBrief(list[12]),
             'timestamp': list[13]
         }
+        if list[12] is not None:
+            data['artifactBrief'] = self.parseArtifactBrief(list[12])
+        return data
 
     def portalSummary(self, dict):
         if dict[0] != 'p':
             raise Exception('Error: EntityDecoder.portalSummary - not a portal')
         if len(dict) == self.core_portal_data_length:
-            return self.codePortalData(dict)
+            return self.corePortalData(dict)
         if len(dict) != self.summary_portal_data_length and len(dict) != self.detailed_portal_data_length:
             print('Portal summary length changed - portal details likely broken!')
-        data = self.codePortalData(dict)
+        data = self.corePortalData(dict)
         data.update(self.summaryPortalData(dict))
         return data
 
@@ -77,11 +83,11 @@ class Portal:
             raise Exception('Error: EntityDecoder.portalDetail - not a portal')
         if len(dict) != self.detailed_portal_data_length:
             print('Portal summary length changed - portal details likely broken!')
-        data = self.codePortalData(dict)
+        data = self.corePortalData(dict)
         data.update(self.summaryPortalData(dict))
         data.update({
-            'mods': map(self.parseMod, dict[self.summary_portal_data_length + 0]),
-            'resonators': map(self.parseResonator, dict[self.summary_portal_data_length + 1]),
+            'mods': [self.parseMod(x) for x in dict[self.summary_portal_data_length] ],
+            'resonators': [self.parseResonator(x) for x in dict[self.summary_portal_data_length + 1] ],
             'owner': dict[self.summary_portal_data_length + 2],
             'artifactDetail': self.parseArtifactDetail(dict[self.summary_portal_data_length + 3]),
         })

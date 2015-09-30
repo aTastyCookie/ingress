@@ -4,7 +4,7 @@ from random import randint
 
 
 class Worker(BaseWorker):
-    def do(self):
+    def run(self):
         portals = []
 
         def findPortals(entities):
@@ -42,10 +42,10 @@ class Worker(BaseWorker):
                 findPortals(entities)
                 self.logger.info('[%s] Fetch portals (%s)' % (self.name, len(portals)))
                 for portal in portals:
-                    dump['portals'][portal] = api.fetch_portal(portal)
+                    dump['portals'][portal.replace('.', '_')] = api.fetch_portal(portal)
                     sleep(0.5)
                 self.logger.info('[%s] Emit data to HQ' % self.name)
                 self.emit(dump)
-                sleepTime = randint(300, 600)
-                self.logger.info('[%s] sleep %s' % (self.name, sleepTime))
-                sleep(sleepTime)
+            sleepTime = randint(300, 600)
+            self.logger.info('[%s] sleep %s' % (self.name, sleepTime))
+            sleep(sleepTime)

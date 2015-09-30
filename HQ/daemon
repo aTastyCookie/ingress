@@ -5,7 +5,7 @@ from yaml import load
 import signal
 import daemon
 
-from ingress.Daemon import Daemon
+from hq.Daemon import HQDaemon
 
 
 def main():
@@ -26,11 +26,11 @@ def main():
 def start():
     print('Starting daemon...')
     if not pid_exists():
-        context.open()
+        # context.open()
         save_pid()
-        d = Daemon(config)
+        d = HQDaemon(config)
         d.start()
-        context.close()
+        # context.close()
     else:
         print("Another process already in progress")
 
