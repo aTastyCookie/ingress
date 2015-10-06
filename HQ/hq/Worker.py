@@ -48,8 +48,10 @@ class Worker(threading.Thread):
                             entity[2][2][2][0]
                         ]
                     })
-            elif entity[0].endswith('.9') or entity[0].endswith('.b_ab') or entity[0].endswith('.b_bc') or entity[
-                0].endswith('.b_ac'): # link
+            elif entity[0].endswith('.9') or \
+                    entity[0].endswith('.b_ab') or \
+                    entity[0].endswith('.b_bc') or \
+                    entity[0].endswith('.b_ac'):  # link
                 linkId = entity[0].replace('.', '_')
                 if self.db.links.count({'id': linkId}) == 0:
                     self.db.links.insert({
@@ -69,7 +71,13 @@ class Worker(threading.Thread):
                 self.db.portals.insert(portalDetail)
             else:
                 oldPortalDetail = self.db.portals.find({'guid': guid}).next()
-                # TODO diff portal data and update this + save history
+                if oldPortalDetail['owner'] != portalDetail['owner']:  # portal recaptured
+                    portalDetail['history'] = {
+                        'event': 'recaptured',
+                        'timestamp': data['meta']['captured_at'],
+                        'previousData': oldPortalDetail
+                    }
+                    # TODO diff portal data and update this + save history
 
     def run(self):
         ampqConn = pika.BlockingConnection(
@@ -80,5 +88,6 @@ class Worker(threading.Thread):
         ampq.basic_consume(self.onData, queue=self.config['rabbitmq']['queue_key'],
                            no_ack=True)
         ampq.start_consuming()
-        # raw = json.dumps(self.db.raw.find({}, {'_id': False}).next()).encode()
-        # self.onData(None, None, None, raw)
+        # for i in self.db.raw.find({}, {'_id': False}):
+        #     raw = json.dumps(i).encode()
+        #     self.onData(None, None, None, raw)

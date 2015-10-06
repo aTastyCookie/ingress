@@ -1,19 +1,18 @@
-from math import pi, sin, cos, tan, asin, radians, sqrt, log, pow, atan, sinh
+from math import pi, sin, cos, tan, asin, radians, sqrt, log, pow, atan, sinh, floor
 
 tilecounts = [1, 1, 1, 40, 40, 80, 80, 320, 1000, 2000, 2000, 4000, 8000, 16000, 16000, 32000]
 
 
 def calc_tile(lng, lat, zoomlevel):
     rlat = radians(lat)
-    tilecount = tilecounts[zoomlevel - 1]
-    xtile = int((lng + 180.0) / 360.0 * tilecount)
-    ytile = int((1.0 - log(tan(rlat) + (1 / cos(rlat))) / pi) / 2.0 * tilecount)
-    lo, la = get_tile_center_lng_lat(xtile, ytile, zoomlevel)
+    tilecount = tilecounts[zoomlevel]
+    xtile = floor((lng + 180.0) / 360.0 * tilecount)
+    ytile = floor((1.0 - log(tan(rlat) + (1 / cos(rlat))) / pi) / 2.0 * tilecount)
     return xtile, ytile
 
 
 def get_tile_center_lng_lat(xtile, ytile, zoomlevel):
-    n = tilecounts[zoomlevel - 1]
+    n = tilecounts[zoomlevel]
     lon_deg = xtile / n * 360.0 - 180.0
     lat_rad = atan(sinh(pi * (1 - 2 * ytile / n)))
     lat_deg = 180.0 * (lat_rad / pi)
@@ -141,14 +140,14 @@ class MercatorProjection:
 
 
 def getField(centerLng, centerLat, zoom):
-    mapWidth = 1024
-    mapHeight = 768
-    scale = tilecounts[zoom - 1]
+    mapWidth = 1440
+    mapHeight = 395
+    scale = 2 ** zoom
     proj = MercatorProjection()
     centerPx = proj.fromLatLngToPoint(centerLng, centerLat)
-    SWPoint = G_Point(centerPx.x - (mapWidth / 2) / scale, centerPx.y + (mapHeight / 2) / scale)
+    SWPoint = G_Point(centerPx.x - (mapWidth) / scale, centerPx.y + (mapHeight) / scale)
     SWLatLon = proj.fromPointToLatLng(SWPoint)
-    NEPoint = G_Point(centerPx.x + (mapWidth / 2) / scale, centerPx.y - (mapHeight / 2) / scale)
+    NEPoint = G_Point(centerPx.x + (mapWidth) / scale, centerPx.y - (mapHeight) / scale)
     NELatLon = proj.fromPointToLatLng(NEPoint)
     return {
         'maxLngE6': int(NELatLon.lng * 1E6),

@@ -47,8 +47,9 @@ class Portal:
     def corePortalData(self, list):
         return {
             'team': list[1],
-            'latE6': list[2],
-            'lngE6': list[3]
+            'latE6': list[2] / 1E6,
+            'lngE6': list[3] / 1E6,
+            'history': [],
         }
 
     def summaryPortalData(self, list):
@@ -61,7 +62,7 @@ class Portal:
             'ornaments': list[9],
             'mission': list[10],
             'mission50plus': list[11],
-            'timestamp': list[13]
+            'capturedTimestamp': list[13]
         }
         if list[12] is not None:
             data['artifactBrief'] = self.parseArtifactBrief(list[12])

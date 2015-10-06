@@ -8,10 +8,10 @@ from pymongo import MongoClient
 import pika
 import json
 import time
-from ingress.exceptions.Ingress import IngressException
-from ingress.exceptions.AccountBanned import AccountBannedException
-from ingress.api.intel import Intel
-from ingress.api.utils import getField
+from spy.exceptions.Ingress import IngressException
+from spy.exceptions.AccountBanned import AccountBannedException
+from spy.api.intel import Intel
+from spy.api.utils import getField
 
 
 class BaseWorker(threading.Thread):
@@ -89,12 +89,13 @@ class BaseWorker(threading.Thread):
                 cookies += '%s=%s; ' % (cookie.name, cookie.value)
         self.accountCookies = cookies
         if banned:
+            self.db.accounts.update_one(self.account, {'$set': {'status': 'BANNED'}})
             raise AccountBannedException(email)
         return cookies
 
     def getTileCookies(self, tile):
         return self.getLoginCookies() + "ingress.intelmap.shflt=viz; ingress.intelmap.lat=%s; ingress.intelmap.lng=%s; ingress.intelmap.zoom=%s" % (
-            tile['lat'], tile['lng'], 16
+            tile['centerLat'], tile['centerLng'], 16
         )
 
     def lockAccount(self):
@@ -105,7 +106,7 @@ class BaseWorker(threading.Thread):
             self.db.accounts.update_one(self.account, {'$set': {'status': 'OK'}})
 
     def buildApi(self, tile):
-        return Intel(self.getTileCookies(tile), getField(tile['lat'], tile['lng'], 16))
+        return Intel(self.getTileCookies(tile), getField(tile['centerLat'], tile['centerLng'], 16))
 
     def emit(self, dump):
         dump['meta'] = {
@@ -113,6 +114,8 @@ class BaseWorker(threading.Thread):
             'spy_region': 'kaliningradskaya oblast',
             'captured_at': int(time.time())
         }
+        # self.db.raw.insert(dump)
+        # return # TODO debug stuff
         ampqConn = pika.BlockingConnection(
             pika.ConnectionParameters(self.config['rabbitmq']['host'], self.config['rabbitmq']['port'])
         )

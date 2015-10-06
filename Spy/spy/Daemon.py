@@ -2,12 +2,12 @@ from pymongo import MongoClient
 import logging
 from logging import Formatter
 from cloghandler import ConcurrentRotatingFileHandler
-from ingress.Notifier import MailNotifier
-from ingress.Tilier import Tilier
-from ingress.Worker import Worker
+from spy.Notifier import MailNotifier
+from spy.Tilier import Tilier
+from spy.Worker import Worker
 
 
-class Daemon:
+class SPYDaemon:
     def __init__(self, config):
         self.config = config
         self.notifier = self.loadNotifier(config['notifier'])

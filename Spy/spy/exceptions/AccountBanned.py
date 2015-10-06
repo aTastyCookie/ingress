@@ -1,4 +1,4 @@
-from ingress.exceptions.Ingress import IngressException
+from spy.exceptions.Ingress import IngressException
 
 
 class AccountBannedException(IngressException):

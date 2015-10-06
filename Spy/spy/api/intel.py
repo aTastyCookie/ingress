@@ -45,10 +45,10 @@ class Intel(object):
         url = 'https://www.ingress.com/r/getPlexts'
         payload = {
             'maxLatE6': self.field['maxLatE6'],
-            'minLatE6': self.field['minLatE6'],
             'maxLngE6': self.field['maxLngE6'],
-            'minLngE6': self.field['minLngE6'],
             'maxTimestampMs': maxts,
+            'minLatE6': self.field['minLatE6'],
+            'minLngE6': self.field['minLngE6'],
             'minTimestampMs': mints,
             'tab': tab
         }

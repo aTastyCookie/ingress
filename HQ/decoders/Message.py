@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 
 
 class Message(object):
-    def parse(self, dict):
+    @staticmethod
+    def parse(dict):
         seconds, millis = divmod(dict[1], 1000)
         time = datetime.fromtimestamp(seconds) + timedelta(milliseconds=millis)
         return {

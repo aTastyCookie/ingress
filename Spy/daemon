@@ -5,7 +5,7 @@ from yaml import load
 import signal
 import daemon
 
-from ingress.Daemon import Daemon
+from spy.Daemon import SPYDaemon
 
 
 def main():
@@ -28,7 +28,7 @@ def start():
     if not pid_exists():
         context.open()
         save_pid()
-        d = Daemon(config)
+        d = SPYDaemon(config)
         d.start()
         context.close()
     else:
