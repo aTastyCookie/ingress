@@ -47,3 +47,4 @@ class HQDaemon:
             worker = Worker(self.config, name="worker_%s" % i)
             self.workers.append(worker)
             worker.start()
+            return

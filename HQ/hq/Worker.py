@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import pika
 import json
 from decoders.Portal import Portal
+from decoders.Message import Message
 
 
 class Worker(threading.Thread):
@@ -22,19 +23,14 @@ class Worker(threading.Thread):
         data = json.loads(body.decode())
         self.logger.info('[%s] Captured data from %s' % (self.name, data['meta']['spy_region']))
         self.db.raw.insert(data)
-
-        # TODO comm inserts
-
         self.db.scores.insert({
             'captured_at': data['meta']['captured_at'],
             'scores': data['score']
         })
-
         if self.db.regions.count({'regionName': data['region']['regionName']}) == 0:
             self.db.regions.insert(data['region'])
         else:
             self.db.regions.update({'regionName': data['region']['regionName']}, {'$set': data['region']})
-
         for entity in data['entities']:
             if entity[0].endswith('.b'):  # field
                 fieldId = entity[0].replace('.', '_')
@@ -42,6 +38,7 @@ class Worker(threading.Thread):
                     self.db.fields.insert({
                         'id': fieldId,
                         'team': entity[2][1],
+                        'mu': 0,
                         'portals': [
                             entity[2][2][0][0],
                             entity[2][2][1][0],
@@ -71,13 +68,26 @@ class Worker(threading.Thread):
                 self.db.portals.insert(portalDetail)
             else:
                 oldPortalDetail = self.db.portals.find({'guid': guid}).next()
-                if oldPortalDetail['owner'] != portalDetail['owner']:  # portal recaptured
+                if oldPortalDetail != portalDetail:
                     portalDetail['history'] = {
-                        'event': 'recaptured',
                         'timestamp': data['meta']['captured_at'],
                         'previousData': oldPortalDetail
                     }
-                    # TODO diff portal data and update this + save history
+                    self.db.portals.update({'guid': guid}, {'$set': portalDetail})
+        for tab, plexts in data['comm'].items():
+            for plext in plexts:
+                message = Message.parse(plext)
+                if self.db.comm.count({'guid': message['guid']}) == 0:
+                    self.db.comm.insert(message)
+                if 'MUs' in message['text']:
+                    mu = int(message['markup'][4][1]['plain'])
+                    if self.db.portals.count({'title': message['markup'][2][1]['name']}) != 0:
+                        portal = self.db.portals.find({'title': message['markup'][2][1]['name']}).next()
+                        fields = self.db.fields.find(
+                            {'portals': {'$elemMatch': {'$eq': portal['guid'].replace('_', '.')}}})
+                        for field in fields:
+                            field['mu'] += mu
+                            self.db.fields.update({'id': field['id']}, {'$set': field})
 
     def run(self):
         ampqConn = pika.BlockingConnection(

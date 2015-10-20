@@ -4,12 +4,12 @@ from datetime import datetime, timedelta
 class Message(object):
     @staticmethod
     def parse(dict):
-        seconds, millis = divmod(dict[1], 1000)
-        time = datetime.fromtimestamp(seconds) + timedelta(milliseconds=millis)
+        seconds = dict[1] / 1000
         return {
             'guid': dict[0],
-            'time': time.strftime('%Y/%m/%d %H:%M:%S:%f')[:-3],
+            'time': seconds,
             'text': dict[2]['plext']['text'],
             'type': dict[2]['plext']['plextType'],
-            'team': dict[2]['plext']['team']
+            'team': dict[2]['plext']['team'],
+            'markup': dict[2]['plext']['markup'],
         }

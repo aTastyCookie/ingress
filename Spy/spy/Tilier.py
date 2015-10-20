@@ -1,4 +1,4 @@
-from spy.api.utils import calc_tile, getField, get_tile_center_lng_lat
+from spy.api.utils import calc_tile, get_field, get_tile_center_lng_lat, get_tile_bounds
 
 
 class Tilier:
@@ -6,17 +6,18 @@ class Tilier:
         self.config = config
 
     def getTiles(self):
-        field = getField(self.config['base_lat'], self.config['base_lng'], 10)
-        minxtile, maxytile = calc_tile(field['minLngE6'] / 1E6, field['minLatE6'] / 1E6, 14)
-        maxxtile, minytile = calc_tile(field['maxLngE6'] / 1E6, field['maxLatE6'] / 1E6, 14)
+        field = get_field(self.config['base_lng'], self.config['base_lat'], 10)
+        fetch_zoom = 14
+        minxtile, maxytile = calc_tile(field['minLngE6'] / 1E6, field['minLatE6'] / 1E6, fetch_zoom)
+        maxxtile, minytile = calc_tile(field['maxLngE6'] / 1E6, field['maxLatE6'] / 1E6, fetch_zoom)
         tiles = []
         for xtile in range(minxtile, maxxtile + 1):
             for ytile in range(minytile, maxytile + 1):
-                lat, lng = get_tile_center_lng_lat(xtile, ytile, 14)
+                lng, lat = get_tile_center_lng_lat(xtile, ytile, fetch_zoom)
                 tiles.append({
-                    'tile': '14_{}_{}_2_8_100'.format(xtile, ytile),
-                    'centerLat': lat,
+                    'tile': '13_{}_{}_2_8_100'.format(xtile, ytile),
                     'centerLng': lng,
-                    'bounds': getField(lat, lng, 14)
+                    'centerLat': lat,
+                    'bounds': get_tile_bounds(xtile, ytile, fetch_zoom)
                 })
         return tiles

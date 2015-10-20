@@ -11,7 +11,7 @@ import time
 from spy.exceptions.Ingress import IngressException
 from spy.exceptions.AccountBanned import AccountBannedException
 from spy.api.intel import Intel
-from spy.api.utils import getField
+from spy.api.utils import get_field
 
 
 class BaseWorker(threading.Thread):
@@ -106,7 +106,7 @@ class BaseWorker(threading.Thread):
             self.db.accounts.update_one(self.account, {'$set': {'status': 'OK'}})
 
     def buildApi(self, tile):
-        return Intel(self.getTileCookies(tile), getField(tile['centerLat'], tile['centerLng'], 16))
+        return Intel(self.getTileCookies(tile), get_field(tile['centerLng'], tile['centerLat'], 16))
 
     def emit(self, dump):
         dump['meta'] = {
